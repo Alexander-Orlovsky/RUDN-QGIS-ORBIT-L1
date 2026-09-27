@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Cозданиe 3D-модели территории в QGIS и Qgis2threejs<br> (Часть 1)
-description: Основным результатом выполнения данной практической работы является опубликованный в интернет веб&#8209;геопортал с 3D&#8209;моделью участка реальной местности
+title: Расчет наземных траекторий КА и работа с ними в геоинформационной системе QGIS   <!-- <br>  (Часть 1) -->
+description: Часть 1.&nbsp; Расчет наземных траекторий КА по TLE&#8209;параметрам (элементам) орбиты с созданием их ГИС&#8209;слоев
 permalink: /index.html
 ---
 <!-- ВАЖНО: без "layout: default" локально не работает - сайт генерится, но без макета -->
@@ -13,11 +13,32 @@ permalink: /index.html
     Если самая первая строка в README.md «простой текст», а не заголовок, то title/description берутся из _config.yml
  -->
 
-Этот сайт можно открывать по короткой ссылке **<font color="#159957">bit.ly/RUDN-QGIS-3D-L1</font>**. \
+Этот сайт можно открывать по короткой ссылке **<font color="#159957">bit.ly/RUDN-QGIS-ORBIT-L1</font>**. \
 *Регистр букв должен быть сохранен, то есть заглавные буквы должны быть заглавными.*
 <br><br>
 <hr><hr> <!-- двойная разделительная линия ======================================================== -->
 <br>
+
+
+
+
+<!-- ISS Tracker Widget generator to your website! (https://isstracker.pl/en/info/cooperation) -->
+<!-- 
+<iframe width="600" height="300"
+src="https://isstracker.pl/en/widget/map?
+&disableInfoBox=1
+&lang=en
+&z=2
+&mapType=satellite
+&units=metric
+&preloader=1
+&showSatTooltip=1
+&dayNightLayer=1
+&showFutureOrbit=1"
+style="border: 1px solid rgb(0, 163, 211); border-radius: 20px;">
+</iframe>
+ -->
+
 
 <!-- TOC -->
 
