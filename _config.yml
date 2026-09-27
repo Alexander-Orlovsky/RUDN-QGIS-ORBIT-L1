@@ -1,0 +1,13 @@
+title: RUDN-QGIS-3D-L1
+description: Лабораторная RUDN-QGIS-3D-L1.
+
+show_downloads: false
+google_analytics:
+theme: jekyll-theme-cayman
+
+highlighter: rouge
+
+# Исключаю README, чтобы он не перекладывался в корень самого сайта
+exclude: [README.md, ]
+
+
