@@ -18,19 +18,48 @@ body {
 }
 @media screen and (min-width: 64em) {
   .project-name {
-    font-size: 2.50rem;
+    font-size: 2.00rem;
   }
 }
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .project-name {
-    font-size: 2.00rem;
+    font-size: 1.50rem;
   }
 }
 @media screen and (max-width: 42em) {
   .project-name {
+    font-size: 1.20rem;
+  }
+}
+
+
+
+/*
+Добавил блок ниже для уменьшения размера шрифта Заглавия (title). Переопределяет переменную ".project-tagline", имеющуюся в файле \_site\assets\css\style.css.
+Как понимаю, это переопределение на самом сайте прописывается в файле "style.css.map".
+*/
+.project-tagline {
+  margin-bottom: 1rem;  /* это отступ ниже - я его уменьшил (было 2rem) */
+  font-weight: normal;
+  opacity: 0.9;
+}
+@media screen and (min-width: 64em) {
+  .project-tagline {
     font-size: 1.50rem;
   }
 }
+@media screen and (min-width: 42em) and (max-width: 64em) {
+  .project-tagline {
+    font-size: 1.20rem;
+  }
+}
+@media screen and (max-width: 42em) {
+  .project-tagline {
+    font-size: 1.0rem;
+  }
+}
+
+
 
 /*
 Добавил блок ниже для уменьшения интервала после заголовков уровня h4. Их я использую в качестве заголовков для Блок цитат (Blockquote).
@@ -56,6 +85,8 @@ body {
   margin-bottom: -0.75rem;
 }
 
+
+
 /*
 Я вынес сюда (в этот файл) весь блок CSS для удобства переопределения именно здесь всех свойств у параметра "main-content" для kbd.
 CSS-переменная ".main-content kbd" - это стиль представления тега обозначения клавиш <kbd>F11</kbd>; с помощью CSS его можно оформить в виде кнопки.
@@ -74,5 +105,7 @@ font-weight: bold; /* это свойство ввел я */
   padding: 4px 6px;
   vertical-align: top;
 }
+
+
 
 
