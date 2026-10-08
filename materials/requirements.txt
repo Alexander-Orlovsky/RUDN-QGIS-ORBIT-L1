@@ -1,0 +1,2 @@
+spacetrack==2.1.0
+pyorbital==1.13.0
