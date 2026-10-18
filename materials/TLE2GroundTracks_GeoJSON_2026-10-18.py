@@ -28,13 +28,15 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # В текущей версии скрипта эта функция используется только для будущих дат (latest=True);
 # для сегодняшней и прошедших дат используется get_spacetrack_tle_nearest (см. ниже).
 def get_spacetrack_tle(sat_id, start_date, end_date, username, password, latest=False):
-    st = SpaceTrackClient(identity=username, password=password)
-    if not latest:
-        daterange = op.inclusive_range(start_date, end_date)
-        data = st.gp_history(norad_cat_id=sat_id, orderby='epoch desc', limit=1,
-                             format='tle', epoch=daterange)
-    else:
-        data = st.gp(norad_cat_id=sat_id, format='tle')
+    # Клиент создаем через "with": по выходе из блока библиотека сама выполнит
+    # выход (logout) с сервера Space-Track и закроет соединение
+    with SpaceTrackClient(identity=username, password=password) as st:
+        if not latest:
+            daterange = op.inclusive_range(start_date, end_date)
+            data = st.gp_history(norad_cat_id=sat_id, orderby='epoch desc', limit=1,
+                                 format='tle', epoch=daterange)
+        else:
+            data = st.gp(norad_cat_id=sat_id, format='tle')
 
     # ИЗМЕНЕНО: возвращаем три значения, как ожидает вызывающий код
     if not data:
@@ -65,13 +67,15 @@ def tle_epoch(tle_1):
 # Поиск ведется в окне search_days суток до и после целевой даты, поэтому функция
 # работает и для объектов, TLE которых публикуются реже раза в сутки.
 def get_spacetrack_tle_nearest(sat_id, target_time, username, password, search_days=3):
-    st = SpaceTrackClient(identity=username, password=password)
     # Окно поиска: search_days суток до и после целевой даты
     # (верхняя граница +1 сутки, т.к. дата без времени трактуется как полночь)
     daterange = op.inclusive_range(target_time.date() - timedelta(days=search_days),
                                    target_time.date() + timedelta(days=search_days + 1))
-    data = st.gp_history(norad_cat_id=sat_id, orderby='epoch asc',
-                         format='tle', epoch=daterange)
+    # Клиент создаем через "with": по выходе из блока библиотека сама выполнит
+    # выход (logout) с сервера Space-Track и закроет соединение
+    with SpaceTrackClient(identity=username, password=password) as st:
+        data = st.gp_history(norad_cat_id=sat_id, orderby='epoch asc',
+                             format='tle', epoch=daterange)
     if not data:
         return None, None, None
 
