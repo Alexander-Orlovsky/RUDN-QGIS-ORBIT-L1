@@ -23,6 +23,7 @@ permalink: /index.html
 
 
 <!-- ISS Tracker Widget generator to your website! (https://isstracker.pl/en/info/cooperation) -->
+<!-- Виджет isstracker.pl заменен собственным (см. ниже): сайт isstracker.pl без VPN из России не открывается.
 <iframe width="600" height="300"
 src="https://isstracker.pl/en/widget/map?
 &disableInfoBox=1
@@ -36,8 +37,20 @@ src="https://isstracker.pl/en/widget/map?
 &showFutureOrbit=1"
 style="max-width: 100%; border: 1px solid rgb(0, 163, 211); border-radius: 20px;">
 </iframe>
+ -->
 
-<!-- ЗАГОТОВКА: подпись к виджету - МКС в реальном времени, линия - ее будущая трасса, тень - ночная сторона Земли -->
+<!-- Собственный виджет "МКС и TERRA сейчас": файлы в assets/iss-widget/ (MapLibre GL JS + satellite.js, TLE - в tle.json) -->
+<link rel="stylesheet" href="{{ '/assets/iss-widget/vendor/maplibre-gl.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/assets/iss-widget/iss-widget.css' | relative_url }}">
+<div class="iss-widget"></div>
+<script src="{{ '/assets/iss-widget/vendor/maplibre-gl.js' | relative_url }}"></script>
+<script src="{{ '/assets/iss-widget/vendor/satellite.min.js' | relative_url }}"></script>
+<script src="{{ '/assets/iss-widget/iss-widget.js' | relative_url }}"></script>
+
+*Где сейчас МКС и TERRA — два КА, трассы которых вы рассчитаете в этой работе. 
+Их положение вычисляется прямо в вашем браузере по TLE с помощью модели SGP4 — так же, как это делает Python&#8209;скрипт лабораторной работы. 
+Сплошная линия — трасса КА на ближайшие полтора витка, пунктир — пройденный виток, круг — зона радиовидимости, затемнение — ночная сторона Земли. 
+Время указано в UTC.*
 
 
 <!-- TOC -->
@@ -376,7 +389,7 @@ create_orbital_track_geojson_for_day(25994, date(2026, 9, 32), 0.5, r'TERRA_2026
 Значения в каждой строке означают:
 - `25544` (или `25994`) — номер КА по спутниковому каталогу NORAD;
 - `date(2026, 9, 32)` — дата расчета: год, месяц, день;
-- `0.5` — шаг расчета в минутах *(0,5&nbsp;мин = 30&nbsp;сек — отсюда «_30sec» в имени файла)*;
+- `0.5` — шаг расчета в минутах *(0,5&nbsp;мин = 30&nbsp;секунд — отсюда «_30sec» в имени файла)*;
 - `ISS_2026-09-32_30sec.geojson` — имя создаваемого файла с результатом *(в коде оно записано в&nbsp;одинарных кавычках с буквой `r` впереди — их при редактировании не удаляйте)*.
 
 Дня «32» в сентябре, как и в любом другом месяце, конечно, не бывает — это сделано специально: дату своего варианта вы должны вписать сами. \
@@ -447,7 +460,7 @@ python TLE2GroundTracks_GeoJSON_2026-10-18.py
       target="_blank">
       <b>GeoJSON</b></a> 
 — открытый текстовый формат для хранения географических данных, который понимают практически все ГИС и веб&#8209;карты. \
-Каждый файл содержит **точечный ГИС&#8209;слой**: при шаге 30&nbsp;сек за сутки получается 2880 точек. 
+Каждый файл содержит **точечный ГИС&#8209;слой**: при шаге 30&nbsp;секунд за сутки получается 2880 точек. 
 Для&nbsp;каждой точки рассчитаны следующие атрибуты:
 
 | Атрибут | Описание |

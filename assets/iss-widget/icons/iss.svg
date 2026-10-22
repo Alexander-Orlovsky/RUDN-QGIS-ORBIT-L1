@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32" viewBox="0 0 64 32">
+  <!-- МКС (вид сверху, упрощенно): поперечная ферма, 8 крыльев солнечных батарей, блок модулей в центре -->
+  <!-- Ферма -->
+  <rect x="3" y="14.8" width="58" height="2.4" fill="#e6e6e6" stroke="#333" stroke-width="0.6"/>
+  <!-- Солнечные батареи (у МКС - золотисто-оранжевые) -->
+  <g fill="#e0a43c" stroke="#5a3e0a" stroke-width="0.7">
+    <rect x="5"  y="2.5" width="5.5" height="11.5"/><rect x="12.5" y="2.5" width="5.5" height="11.5"/>
+    <rect x="5"  y="18"  width="5.5" height="11.5"/><rect x="12.5" y="18"  width="5.5" height="11.5"/>
+    <rect x="46" y="2.5" width="5.5" height="11.5"/><rect x="53.5" y="2.5" width="5.5" height="11.5"/>
+    <rect x="46" y="18"  width="5.5" height="11.5"/><rect x="53.5" y="18"  width="5.5" height="11.5"/>
+  </g>
+  <!-- Линии ячеек батарей -->
+  <g stroke="#8a5f12" stroke-width="0.5">
+    <line x1="7.75" y1="2.5" x2="7.75" y2="14"/><line x1="15.25" y1="2.5" x2="15.25" y2="14"/>
+    <line x1="7.75" y1="18"  x2="7.75" y2="29.5"/><line x1="15.25" y1="18" x2="15.25" y2="29.5"/>
+    <line x1="48.75" y1="2.5" x2="48.75" y2="14"/><line x1="56.25" y1="2.5" x2="56.25" y2="14"/>
+    <line x1="48.75" y1="18"  x2="48.75" y2="29.5"/><line x1="56.25" y1="18" x2="56.25" y2="29.5"/>
+  </g>
+  <!-- Радиаторы -->
+  <g fill="#f4f4f4" stroke="#555" stroke-width="0.5">
+    <rect x="23.5" y="9" width="3" height="5.8"/><rect x="37.5" y="17.2" width="3" height="5.8"/>
+  </g>
+  <!-- Блок модулей поперек фермы -->
+  <rect x="29.5" y="6" width="5" height="20" rx="1.6" fill="#f0f0f0" stroke="#333" stroke-width="0.8"/>
+  <rect x="26.5" y="18.8" width="11" height="3.4" rx="1.2" fill="#f0f0f0" stroke="#333" stroke-width="0.8"/>
+</svg>

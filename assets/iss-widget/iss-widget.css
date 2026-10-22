@@ -1,0 +1,110 @@
+/* Виджет "МКС и TERRA сейчас" для сайта RUDN-QGIS-ORBIT-L1 */
+
+.isw {
+  --isw-green: #159957;
+  --isw-blue: #155799;
+  --isw-panel-bg: rgba(255, 255, 255, 0.92);
+  --isw-panel-fg: #24292e;
+  --isw-muted: #606c71;
+  position: relative;
+  width: 100%;
+  height: 440px;
+  border: 1px solid #606c71;   /* как у готовых скриншотов на сайте */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b1d2a;
+  font: 13px/1.35 "Open Sans", "Segoe UI", Arial, sans-serif;
+  color: var(--isw-panel-fg);
+  margin: 0 0 1rem;
+}
+
+.isw:fullscreen { height: 100%; border-radius: 0; border: none; }
+
+.isw-map { position: absolute; inset: 0; }
+
+/* Информационная панель */
+.isw-panel {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  width: 260px;
+  max-height: calc(100% - 20px);
+  overflow: auto;
+  background: var(--isw-panel-bg);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  padding: 8px 10px 8px;
+}
+.isw-panel.isw-collapsed .isw-body { display: none; }
+
+.isw-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.isw-title { font-weight: 700; color: var(--isw-blue); flex: 1; }
+.isw-toggle {
+  border: none; background: transparent; cursor: pointer; font-size: 14px;
+  color: var(--isw-muted); padding: 0 2px; line-height: 1;
+}
+
+/* Группы переключателей-кнопок */
+.isw-seg { display: inline-flex; border: 1px solid var(--isw-green); border-radius: 6px; overflow: hidden; }
+.isw-seg button {
+  border: none; background: #fff; color: var(--isw-green);
+  padding: 3px 8px; font: inherit; font-size: 12px; cursor: pointer;
+}
+.isw-seg button + button { border-left: 1px solid var(--isw-green); }
+.isw-seg button.isw-on { background: var(--isw-green); color: #fff; }
+.isw-seg button:focus-visible { outline: 2px solid var(--isw-blue); outline-offset: -2px; }
+
+.isw-row { display: flex; gap: 6px; margin: 2px 0; }
+.isw-row .isw-k { color: var(--isw-muted); flex: 0 0 104px; }
+.isw-row .isw-v { flex: 1; font-variant-numeric: tabular-nums; }
+/* Разделитель: явно задаем все свойства, чтобы на сайте их не переопределяли стили темы Cayman для <hr> */
+.isw .isw-sep { height: 0; padding: 0; background: none; border: none; border-top: 1px solid #e1e4e8; margin: 6px 0; }
+.isw-day { color: #b26a00; font-weight: 600; }
+.isw-night { color: #155799; font-weight: 600; }
+.isw-twilight { color: #6a3fb5; font-weight: 600; }
+
+.isw-legend { color: var(--isw-muted); font-size: 11.5px; margin-top: 9px; }
+.isw-legend span { white-space: nowrap; }
+/* отступ после первого пункта в каждой строке легенды ("трасса вперед", "зона радиовидимости") */
+.isw-legend span:nth-of-type(odd) { margin-right: 6px; }
+.isw-lg-line { display: inline-block; width: 18px; border-top: 2px solid #d62828; vertical-align: middle; margin-right: 3px; }
+.isw-lg-dash { border-top-style: dashed; }
+.isw-lg-ring { display: inline-block; width: 10px; height: 10px; border: 1.5px solid #155799; border-radius: 50%; vertical-align: middle; margin-right: 3px; }
+.isw-lg-night { display: inline-block; width: 12px; height: 10px; background: rgba(0, 0, 0, 0.35); vertical-align: middle; margin-right: 3px; }
+
+/* Кнопки управления картой (справа сверху, под масштабом) */
+.isw-tools {
+  position: absolute; top: 10px; right: 50px; z-index: 2;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+}
+.isw-tools .isw-seg { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25); }
+
+/* Кнопка "Домой" (обзорный вид) */
+.isw-home img { display: block; margin: auto; }
+
+/* Значки КА и Солнца */
+.isw-sat { display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+.isw-sat-box { display: flex; align-items: center; justify-content: center; }
+.isw-sat img { display: block; transform-origin: 50% 50%; filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.6)); }
+.isw-sat-label {
+  margin-top: 1px; padding: 0 4px; border-radius: 4px;
+  background: rgba(21, 87, 153, 0.85); color: #fff; font: 600 11px/1.4 "Segoe UI", Arial, sans-serif;
+}
+.isw-sun { pointer-events: none; filter: drop-shadow(0 0 3px rgba(255, 170, 0, 0.9)); }
+.isw-sun img { display: block; }
+
+/* Сообщения (нет WebGL, нет данных) */
+.isw-msg {
+  position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center;
+  padding: 20px; text-align: center; color: #fff; background: #0b1d2a; font-size: 14px;
+}
+
+/* Узкие экраны: панель под картой */
+@media (max-width: 640px) {
+  .isw { height: auto; }
+  .isw-map { position: relative; height: 300px; }
+  .isw-panel { position: static; width: auto; max-height: none; border-radius: 0; box-shadow: none; }
+  .isw-tools { top: 10px; right: 46px; }
+  .isw-row .isw-k { flex-basis: 120px; }
+}
