@@ -223,10 +223,10 @@ python --version
 **Скачайте необходимые для работы файлы** и сохраните их в вашей рабочей папке:
 
 - программу (скрипт) для расчета траекторий — 
-   <a href="./materials/TLE2GroundTracks_GeoJSON_2026-10-18.py" 
-      download="TLE2GroundTracks_GeoJSON_2026-10-18.py" 
+   <a href="./materials/TLE2GroundTracks_GeoJSON.py" 
+      download="TLE2GroundTracks_GeoJSON.py" 
       title="Ссылка для загрузки Python-скрипта">
-      <b>TLE2GroundTracks_GeoJSON_2026-10-18.py</b></a>;
+      <b>TLE2GroundTracks_GeoJSON.py</b></a>;
 - список необходимых скрипту библиотек — 
    <a href="./materials/requirements.txt" 
       download="requirements.txt" 
@@ -426,7 +426,7 @@ create_orbital_track_geojson_for_day(25994, date(2026, 9, 27), 0.5, r'TERRA_2026
 Откройте командную строку в вашей рабочей папке (через адресную строку Проводника, как это описано выше в разделе об установке дополнительных библиотек) и выполните команду:
 
 ```
-python TLE2GroundTracks_GeoJSON_2026-10-18.py
+python TLE2GroundTracks_GeoJSON.py
 ```
 
 > *Чтобы не набирать длинное имя файла целиком, введите `python TLE` и нажмите клавишу «**Tab**» — имя файла допишется автоматически.*

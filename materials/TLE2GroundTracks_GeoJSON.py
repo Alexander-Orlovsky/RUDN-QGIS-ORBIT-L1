@@ -1,3 +1,6 @@
+# TLE2GroundTracks_GeoJSON.py - расчет наземных трасс (подспутниковых точек) КА по TLE
+# с записью результата в GeoJSON. Лабораторная работа RUDN-QGIS-ORBIT-L1.
+# Версия скрипта (дата последнего изменения): 2026-10-18
 
 # Импортируем необходимые библиотеки
 from datetime import datetime, date, timedelta, timezone
