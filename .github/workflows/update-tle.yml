@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Получить файлы репозитория
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5   # v5 работает на Node.js 24 (v4 - на устаревшем Node.js 20)
 
       - name: Получить свежие TLE с CelesTrak и обновить tle.json
         run: python3 .github/scripts/update_tle.py

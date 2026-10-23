@@ -359,10 +359,10 @@ iss-tracker.com отклонен из-за лимитов: 5 загрузок з
 
 ## 12. Открытые вопросы (уточнять у автора, не придумывать)
 
-- GitHub Actions для `tle.json` создано 24.10.2026 - проверить первый запуск на GitHub
-  (вручную через Actions -> Run workflow): права на push, запрос сборки Pages. Если push
-  отклонен (403) - Settings -> Actions -> General -> Workflow permissions -> Read and write.
-  24.10.2026 CelesTrak отдавал TLE с эпохой 21.10 (задержка обновления у CelesTrak?);
+- (сделано) GitHub Actions для `tle.json` - первый ручной запуск 24.10.2026 успешен: коммит
+  от github-actions[bot] прошел, сайт пересобрался, на внешнем сайте новый tle.json.
+  checkout обновлен до v5 (v4 - предупреждение про устаревший Node.js 20). Если когда-нибудь
+  push отклонят (403) - Settings -> Actions -> General -> Workflow permissions -> Read and write;
 - в панели браузера Claude карты WebGL могут не отрисовываться (не срабатывает
   requestAnimationFrame) - тогда визуально проверяет автор.
 
