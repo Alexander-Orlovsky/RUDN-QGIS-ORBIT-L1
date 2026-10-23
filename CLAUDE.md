@@ -297,8 +297,12 @@ iss-tracker.com отклонен из-за лимитов: 5 загрузок з
 Файлы - `assets/iss-widget/`:
 
 - `iss-widget.js`, `iss-widget.css` - код виджета (комментарии в коде);
-- `tle.json` - TLE МКС и TERRA (источник CelesTrak); пока обновляется вручную,
-  план - GitHub Actions раз в сутки (не сделано, см. раздел 12);
+- `tle.json` - TLE МКС и TERRA (источник CelesTrak). Обновляется **автоматически раз в сутки**
+  заданием GitHub Actions `.github/workflows/update-tle.yml` (03:17 UTC + ручной запуск
+  "Run workflow") со скриптом `.github/scripts/update_tle.py` (только стандартная библиотека;
+  проверяет длину строк, контрольные суммы, NORAD, что эпоха не старее прежней). При изменении -
+  коммит от `github-actions[bot]` и явный запрос пересборки Pages (`gh api .../pages/builds`).
+  Автору перед своим Push в GitHub Desktop нужно сначала нажимать **Pull origin**;
 - `icons/` - `iss.svg`, `terra.svg` (разные упрощенные силуэты), `sun.svg`, `home.svg`;
   размеры значков КА на карте - блок `SAT_ICONS` в начале `iss-widget.js`;
 - `vendor/` - MapLibre GL JS **5.24.0** и satellite.js **5.0.0** (однофайловые сборки;
@@ -355,8 +359,10 @@ iss-tracker.com отклонен из-за лимитов: 5 загрузок з
 
 ## 12. Открытые вопросы (уточнять у автора, не придумывать)
 
-- GitHub Actions для ежедневного обновления `assets/iss-widget/tle.json` - сделать и
-  проверить на GitHub (учесть: коммиты от GITHUB_TOKEN могут не запускать сборку Pages);
+- GitHub Actions для `tle.json` создано 24.10.2026 - проверить первый запуск на GitHub
+  (вручную через Actions -> Run workflow): права на push, запрос сборки Pages. Если push
+  отклонен (403) - Settings -> Actions -> General -> Workflow permissions -> Read and write.
+  24.10.2026 CelesTrak отдавал TLE с эпохой 21.10 (задержка обновления у CelesTrak?);
 - в панели браузера Claude карты WebGL могут не отрисовываться (не срабатывает
   requestAnimationFrame) - тогда визуально проверяет автор.
 
