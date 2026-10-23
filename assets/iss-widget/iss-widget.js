@@ -22,6 +22,10 @@
   var TRACK_STEP_SEC = 30;       // шаг расчета трассы, с (как в лабораторной работе)
   var TRACK_PAST_ORBITS = 1;     // пройденная часть трассы, витков
   var TRACK_FUTURE_ORBITS = 1.5; // будущая часть трассы, витков
+  // Сетка Веб-Меркатора в MapLibre заканчивается на ±85,05°; полярную "шапку" глобуса MapLibre
+  // дорисовывает, растягивая к полюсу то, что лежит на самом краю сетки. Поэтому контур и заливку
+  // зоны радиовидимости обрезаем чуть раньше - по этой широте (с запасом от края сетки)
+  var POLAR_CUT_LAT = 84.5;      // град.
   var FOOTPRINT_STEP = 0.5;      // шаг точек по азимуту на границе зоны радиовидимости, град.
   var FOOTPRINT_MAX_DLON = 0.5;  // наибольшая разница долгот соседних точек границы зоны, град.
   var SLOW_UPDATE_SEC = 30;      // как часто пересчитывать границу дня/ночи, с (трасса - каждую секунду)
@@ -97,12 +101,16 @@
   function fmtLat(lat) { return padFig(fmtNum(Math.abs(lat), 2), 2) + '° ' + (lat >= 0 ? 'с.ш.' : 'ю.ш.'); }
   function fmtLon(lon) { return padFig(fmtNum(Math.abs(lon), 2), 3) + '° ' + (lon >= 0 ? 'в.д.' : 'з.д.'); }
 
+  // "Возраст" TLE: сколько прошло от эпохи TLE до текущего момента. Если эпоха впереди
+  // (так бывает у некоторых наборов TLE или при неверных часах компьютера) - "через ..."
   function fmtAge(ms) {
-    var h = Math.floor(ms / 3600000);
-    if (h < 1) return 'менее часа назад';
+    var ahead = ms < 0;
+    var h = Math.floor(Math.abs(ms) / 3600000);
+    if (h < 1) return ahead ? 'менее чем через час' : 'менее часа назад';
     var d = Math.floor(h / 24);
     h = h % 24;
-    return (d > 0 ? d + ' сут ' : '') + h + ' ч назад';
+    var span = (d > 0 ? d + ' сут ' : '') + h + ' ч';
+    return ahead ? 'через ' + span : span + ' назад';
   }
 
   // Разбиение линии на антимеридиане ±180° - тот же прием, что и в лабораторной работе
@@ -246,12 +254,95 @@
       pts.push(cur);
       prev = cur;
     }
-    var lines = splitAtAntimeridian(pts);
+    // Контур зоны: часть выше ±POLAR_CUT_LAT не рисуем (иначе MapLibre прижмет ее к краю сетки,
+    // и край зоны нарисуется дугой вокруг полюса); короткий разрыв приходится на полярную "шапку"
+    var lines = [];
+    cutAtMaxLat(pts).forEach(function (seg) { lines = lines.concat(splitAtAntimeridian(seg)); });
+
+    // Заливка зоны строится отдельно от контура и обрезается по ±POLAR_CUT_LAT
     var containsPole = Math.abs(state.lat) + lam0 / DEG > 90;
-    var fill = (lines.length === 1 && !containsPole)
-      ? { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [lines[0]] } }
+    var ring = containsPole ? polarRing(pts, state.lat > 0 ? 90 : -90) : unwrappedRing(pts, state.lon);
+    ring = clipLatHalf(clipLatHalf(ring, 1), -1);
+    var fill = ring.length >= 4
+      ? { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [ring] } }
       : null;
     return { line: multiLine(lines), fill: fill, radiusKm: R_EARTH * lam0 };
+  }
+
+  // Контур зоны, которая НЕ накрывает полюс. Долготы записываются "непрерывно" относительно
+  // подспутниковой точки (например, 175°...185° вместо 175°...180° и -180°...-175°) - тогда
+  // MapLibre сама правильно разрезает многоугольник по краю мира (антимеридиану)
+  function unwrappedRing(ring, centerLon) {
+    return ring.map(function (p) { return [centerLon + normLon(p[0] - centerLon), p[1]]; });
+  }
+
+  // Контур зоны, которая накрывает полюс: граница зоны пересекает каждый меридиан один раз,
+  // поэтому многоугольник строится как у тени ночи - от границы (по всем долготам от -180° до
+  // +180°) до полюса
+  function polarRing(ring, pole) {
+    var pts = ring.slice(0, -1).sort(function (a, b) { return a[0] - b[0]; });
+    var first = pts[0], last = pts[pts.length - 1];
+    // широта границы на антимеридиане - между последней и первой точками "через" ±180°
+    var latEdge = last[1] + (180 - last[0]) / ((first[0] + 360) - last[0]) * (first[1] - last[1]);
+    return [[-180, latEdge]].concat(pts, [[180, latEdge], [180, pole], [-180, pole], [-180, latEdge]]);
+  }
+
+  // Отсечение замкнутого многоугольника полуплоскостью: оставляем часть, где sign * широта
+  // не больше POLAR_CUT_LAT (sign = 1 - у северного полюса, -1 - у южного).
+  // На каждой пересекающей стороне вставляется точка ровно на этой параллели (алгоритм
+  // Сазерленда - Ходжмана). Долготы в многоугольнике непрерывные, поэтому интерполяция линейная
+  function clipLatHalf(ring, sign) {
+    var pts = ring.slice(0, -1), out = [], n = pts.length;
+    var inside = function (p) { return sign * p[1] <= POLAR_CUT_LAT; };
+    for (var i = 0; i < n; i++) {
+      var cur = pts[i], prev = pts[(i + n - 1) % n];
+      if (inside(cur) !== inside(prev)) {
+        var lim = sign * POLAR_CUT_LAT, f = (lim - prev[1]) / (cur[1] - prev[1]);
+        out.push([prev[0] + f * (cur[0] - prev[0]), lim]);
+      }
+      if (inside(cur)) out.push(cur);
+    }
+    if (out.length) out.push(out[0]);
+    return out;
+  }
+
+  // Разрезание замкнутого контура (первая точка = последней) на участки, лежащие не выше
+  // ±POLAR_CUT_LAT; на границе вставляется точка ровно на этой широте
+  function cutAtMaxLat(ring) {
+    var n = ring.length - 1, i;
+    var above = function (p) { return Math.abs(p[1]) > POLAR_CUT_LAT; };
+    var anyAbove = false;
+    for (i = 0; i < n; i++) if (above(ring[i])) { anyAbove = true; break; }
+    if (!anyAbove) return [ring];
+
+    // Начинаем обход с точки, ближайшей к экватору (она заведомо ниже предела),
+    // чтобы ни один участок не оказался разорван на стыке начала и конца контура
+    var start = 0;
+    for (i = 1; i < n; i++) if (Math.abs(ring[i][1]) < Math.abs(ring[start][1])) start = i;
+    var pts = [];
+    for (i = 0; i <= n; i++) pts.push(ring[(start + i) % n]);
+
+    var segs = [], cur = [pts[0]];
+    for (i = 1; i < pts.length; i++) {
+      var p1 = pts[i - 1], p2 = pts[i];
+      if (above(p1) === above(p2)) {
+        if (!above(p2)) cur.push(p2);
+        continue;
+      }
+      // Точка пересечения с параллелью ±POLAR_CUT_LAT
+      var lim = (above(p1) ? p1[1] : p2[1]) > 0 ? POLAR_CUT_LAT : -POLAR_CUT_LAT;
+      var f = (lim - p1[1]) / (p2[1] - p1[1]);
+      var x = [normLon(p1[0] + f * normLon(p2[0] - p1[0])), lim];
+      if (above(p2)) {            // уходим за предел - заканчиваем участок
+        cur.push(x);
+        segs.push(cur);
+        cur = [];
+      } else {                    // возвращаемся из-за предела - начинаем новый участок
+        cur = [x, p2];
+      }
+    }
+    if (cur.length > 1) segs.push(cur);
+    return segs;
   }
 
   // ---------------------------------------------------------------- Значки
@@ -306,8 +397,20 @@
     root.appendChild(m);
   }
 
+  // Если виджет уже NARROW_WIDTH пикселей, панель уходит под карту (иначе она наезжает
+  // на кнопки справа). Ширина берется у самого виджета, а не у окна браузера
+  var NARROW_WIDTH = 720;
+
+  function watchWidth(root) {
+    var apply = function () { root.classList.toggle('isw-narrow', root.clientWidth < NARROW_WIDTH); };
+    apply();
+    if (window.ResizeObserver) new ResizeObserver(apply).observe(root);
+    else window.addEventListener('resize', apply);
+  }
+
   function initWidget(root) {
     root.classList.add('isw');
+    watchWidth(root);
     root.innerHTML =
       '<div class="isw-map"></div>' +
       '<div class="isw-panel">' +
@@ -318,6 +421,7 @@
       '  </div>' +
       '  <div class="isw-body">' +
       '    <div class="isw-row"><span class="isw-k">Время UTC</span><span class="isw-v" data-f="time"></span></div>' +
+      '    <div class="isw-row"><span class="isw-k">Время МСК</span><span class="isw-v" data-f="timeMsk"></span></div>' +
       '    <div class="isw-row"><span class="isw-k">Широта</span><span class="isw-v" data-f="lat"></span></div>' +
       '    <div class="isw-row"><span class="isw-k">Долгота</span><span class="isw-v" data-f="lon"></span></div>' +
       '    <div class="isw-row"><span class="isw-k">Высота</span><span class="isw-v" data-f="alt"></span></div>' +
@@ -328,6 +432,7 @@
       '    <div class="isw-row"><span class="isw-k">Период</span><span class="isw-v" data-f="period"></span></div>' +
       '    <div class="isw-row"><span class="isw-k">Зона видимости</span><span class="isw-v" data-f="ring"></span></div>' +
       '    <div class="isw-row"><span class="isw-k">Эпоха TLE</span><span class="isw-v" data-f="epoch"></span></div>' +
+      '    <div class="isw-row"><span class="isw-k">Возраст TLE</span><span class="isw-v" data-f="age"></span></div>' +
       '    <div class="isw-legend">' +
       '      <span><i class="isw-lg-line"></i>трасса вперед</span> &nbsp;' +
       '      <span><i class="isw-lg-line isw-lg-dash"></i>пройденный виток</span><br>' +
@@ -551,7 +656,8 @@
         boxEl.style.width = boxEl.style.height = box + 'px';
         satMarker.setOffset([0, -box / 2]);
       }
-      fields.time.textContent = fmtTime(now) + ' (МСК ' + fmtTime(now, 3) + ')';
+      fields.time.textContent = fmtTime(now);
+      fields.timeMsk.textContent = fmtTime(now, 3);
       fields.lat.textContent = fmtLat(s.lat);
       fields.lon.textContent = fmtLon(s.lon);
       fields.alt.textContent = fmtNum(s.alt, 1) + ' км';
@@ -559,8 +665,8 @@
       fields.sza.innerHTML = fmtNum(sza, 1) + '° — <span class="' + cls + '">' + txt + '</span>';
       fields.incl.textContent = fmtNum(sat.inclination, 2) + '°';
       fields.period.textContent = fmtNum(sat.periodMin, 1) + ' мин';
-      fields.epoch.textContent = fmtDate(sat.epoch) + ' ' + fmtTime(sat.epoch).slice(0, 5) +
-                                 ' UTC (' + fmtAge(now - sat.epoch) + ')';
+      fields.epoch.textContent = fmtDate(sat.epoch) + ' ' + fmtTime(sat.epoch).slice(0, 5) + ' UTC';
+      fields.age.textContent = fmtAge(now - sat.epoch);
     }
 
     function tick(force) {
