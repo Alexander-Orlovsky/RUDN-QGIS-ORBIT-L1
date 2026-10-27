@@ -147,7 +147,7 @@ style="max-width: 100%; border: 1px solid rgb(0, 163, 211); border-radius: 20px;
 В результате у вас должны получиться **четыре ГИС&#8209;слоя** в формате GeoJSON (точечный и линейный для каждого КА) 
 и **работающая анимация** пролета КА в QGIS:
 
-<img src="media/Пример_результата_трасс_в_QGIS.png" alt="Нет фото" style="width: ; border: 2px solid #606c71;">
+<img src="media/Окно_QGIS-проекта_с_анимацией-Perplexity.gif" alt="Нет фото" style="width: ; border: 1px solid #606c71;">
 
 *Пример результата: трассы МКС и TERRA на 27 сентября 2026 года в QGIS&#8209;проекте с анимацией пролета КА, 
 настроенной в панели «Управление временем» (англ. Temporal Controller), на фоне карты OpenStreetMap.*
