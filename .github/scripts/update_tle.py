@@ -11,6 +11,8 @@
 """
 import json
 import sys
+import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -19,6 +21,13 @@ from pathlib import Path
 TLE_FILE = Path(__file__).resolve().parents[2] / 'assets' / 'iss-widget' / 'tle.json'
 CELESTRAK_URL = 'https://celestrak.org/NORAD/elements/gp.php?CATNR={norad}&FORMAT=TLE'
 USER_AGENT = 'RUDN-QGIS-ORBIT-L1 TLE updater (GitHub Actions, once a day)'
+
+# Повторные попытки при сетевых сбоях (CelesTrak иногда не отвечает серверам GitHub - 31.10.2026
+# не ответил 2 мин подряд). Повторяем только таймауты и ошибки соединения: на ответ сервера
+# с HTTP-ошибкой (например, 403 при слишком частых запросах) повтор не поможет.
+FETCH_ATTEMPTS = 3       # всего попыток на один КА
+FETCH_TIMEOUT = 30       # ожидание ответа, с
+RETRY_PAUSE = 60         # пауза между попытками, с
 
 
 def checksum_ok(line):
@@ -35,11 +44,26 @@ def tle_epoch(line1):
     return datetime(year, 1, 1, tzinfo=timezone.utc) + timedelta(days=day_of_year - 1)
 
 
+def download(url):
+    """Загрузка текста по url с повторными попытками при таймаутах и ошибках соединения."""
+    req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT})
+    for attempt in range(1, FETCH_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+                return resp.read().decode('ascii', errors='replace')
+        except urllib.error.HTTPError:
+            raise   # сервер ответил ошибкой - не повторяем
+        except (urllib.error.URLError, OSError) as exc:   # таймаут, обрыв, DNS
+            if attempt == FETCH_ATTEMPTS:
+                raise
+            print('  попытка %d из %d не удалась (%s), повтор через %d с'
+                  % (attempt, FETCH_ATTEMPTS, exc, RETRY_PAUSE))
+            time.sleep(RETRY_PAUSE)
+
+
 def fetch_tle(norad):
     """Получение и проверка TLE одного КА. Возвращает (строка1, строка2) или вызывает исключение."""
-    req = urllib.request.Request(CELESTRAK_URL.format(norad=norad), headers={'User-Agent': USER_AGENT})
-    with urllib.request.urlopen(req, timeout=60) as resp:
-        text = resp.read().decode('ascii', errors='replace')
+    text = download(CELESTRAK_URL.format(norad=norad))
     lines = [ln.rstrip() for ln in text.splitlines() if ln.strip()]
     line1 = next((ln for ln in lines if ln.startswith('1 ')), None)
     line2 = next((ln for ln in lines if ln.startswith('2 ')), None)
