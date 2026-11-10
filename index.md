@@ -363,7 +363,7 @@ python --version
 > 
 > ```
 > py -3.13 --version
-> py -3.13 -m pip install -r requirements.txt
+> py -3.13 -m pip install -r requirements.txt --default-timeout=120 --retries 10
 > py -3.13 -c "import spacetrack, pyorbital; print('OK')"
 > py -3.13 TLE2GroundTracks_GeoJSON.py
 > ```
@@ -415,12 +415,15 @@ python --version
 В открывшейся командной строке введите команду:
 
 ```
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt --default-timeout=120 --retries 10
 ```
 
 <img src="media/Командная_строка_установка_библиотек.png" alt="Нет фото" style="width: ; border: 1px solid #606c71;">
 
 Выполните ее, нажав «**Enter**».
+
+> *Ключи `--default-timeout=120` и `--retries 10` увеличивают до 120 секунд время ожидания ответа от сервера, с которого скачиваются библиотеки, 
+> а до 10 — число повторных попыток соединения с ним. Связь с этим сервером бывает нестабильной, и без этих ключей установка может прерваться с ошибкой.*
 
 Программа установки **pip** скачает и установит библиотеки spacetrack и pyorbital, а также все библиотеки, которые нужны уже им самим. 
 Первая установка занимает **несколько минут** — не прерывайте ее, даже если кажется, что ничего не происходит. \
@@ -431,9 +434,10 @@ python -m pip install -r requirements.txt
 > В этом случае выполните ту же команду, добавив в конце ключ `--user` (установка только для вашей учетной записи):*
 > 
 > ```
-> python -m pip install -r requirements.txt --user
+> python -m pip install -r requirements.txt --default-timeout=120 --retries 10 --user
 > ```
 
+{: style="margin-top: 36px;"}
 **Проверьте установку**, выполнив команду:
 
 ```

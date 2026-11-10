@@ -208,8 +208,13 @@ pyorbital==1.13.0
 
 Для раздела установки:
 
-- команда установки: `python -m pip install -r requirements.txt`
+- команда установки: `python -m pip install -r requirements.txt --default-timeout=120 --retries 10`
   (не голый `pip` - при нескольких Python на компьютере он может ставить "не туда");
+- ключи `--default-timeout=120 --retries 10` - во **всех** командах `pip install` на сайте (основная,
+  с `py -3.13`, с `--user`), решение автора 10.11.2026: в классе 09.11.2026 pip на Python 3.11.5 падал
+  с `ReadTimeoutError` (read timeout=15, 5 попыток) и `No matching distribution found ... (from versions: none)` -
+  нестабильная связь с pypi.org (CDN Fastly). С ключами установка прошла на том же 3.11.5. Отдельную врезку
+  "если ошибка" автор решил не делать. Ставить 3.13 из-за этой ошибки не нужно;
 - при ошибке доступа - ключ `--user` (учебные компьютеры без прав администратора);
 - в установщике Python для Windows - галочка **"Add python.exe to PATH"** (показать скриншотом);
 - pyorbital тянет scipy и pyproj - первая установка занимает несколько минут, не прерывать.
