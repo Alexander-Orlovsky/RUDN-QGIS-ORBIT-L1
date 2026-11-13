@@ -3,9 +3,11 @@ remote_theme: pages-themes/cayman@v0.2.0
 
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
+- jekyll-sitemap # карта сайта sitemap.xml для поисковых систем
 
 title: RUDN-QGIS-ORBIT-L1
 description: Лабораторная RUDN-QGIS-ORBIT-L1
+locale: ru_RU # язык сайта для метатега og:locale (по умолчанию плагин SEO пишет en_US)
 
 show_downloads: false
 
