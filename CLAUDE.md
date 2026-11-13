@@ -241,9 +241,11 @@ remote_theme: pages-themes/cayman@v0.2.0
 
 plugins:
 - jekyll-remote-theme # add this line to the plugins list if you already have one
+- jekyll-sitemap # карта сайта sitemap.xml для поисковых систем
 
 title: RUDN-QGIS-ORBIT-L1
 description: Лабораторная RUDN-QGIS-ORBIT-L1
+locale: ru_RU # язык сайта для метатега og:locale (по умолчанию плагин SEO пишет en_US)
 
 show_downloads: false
 
@@ -262,6 +264,18 @@ exclude: [README.md, CLAUDE.md, start.bat, Gemfile, Gemfile.lock, "Ссылка 
 - `start.bat`, `Gemfile`, `Gemfile.lock` и ярлыки `.url` - служебные файлы автора,
   исключены, чтобы не попадать на опубликованный сайт (с 09.10.2026).
   Имена с пробелами - в кавычках. Форматирование `_config.yml` автора не менять.
+- **Поисковые системы** (14.11.2026): индексацию ничто не запрещает (`noindex` и `robots.txt` нет).
+  Добавлены `locale: ru_RU` и плагин `jekyll-sitemap` - карта сайта генерируется при сборке
+  (в репозитории файла нет): `https://alexander-orlovsky.github.io/RUDN-QGIS-ORBIT-L1/sitemap.xml`.
+  Новый плагин нужно добавлять и в `Gemfile` (локальный сервер запускается через `bundle exec`
+  в `start.bat` и видит только гемы из `Gemfile`), затем `bundle install --local` для `Gemfile.lock`.
+  Регистрацию в Яндекс.Вебмастере (и при желании в Google Search Console) делает сам автор.
+  Метатеги формирует `{% seo %}` (jekyll-seo-tag) в `_layouts/default.html`.
+- **Свой шаблон `_layouts/default.html`** (копия шаблона Cayman с правками автора: закомментированы
+  кнопка "View on GitHub" и строка "...is maintained by..."; MathJax). С 14.11.2026 в подвале - подпись
+  "Автор: Александр Орловский (Инженерная академия РУДН), orlovskiy-av@rudn.ru, 2026" обычным шрифтом
+  (класс `site-footer-owner`, `font-weight: normal`) на всех страницах. Именно "Автор:", а не "©"
+  (решение автора); почта - обычным текстом, без `mailto:` и маскировки.
 - Единый вариант проверяется на ORBIT, рабочий сайт 3D-L1 не трогаем.
 - При локальной сборке тема скачивается с GitHub - нужен интернет.
 - Версии сборщиков различаются: локально Jekyll 4.4.1 + Rouge 4.6.1, на GitHub Pages (стандартная сборка) -
