@@ -151,4 +151,54 @@ vertical-align: middle выравнивает середину значка по
 
 
 
+/*
+Таблицы-перечни проверок на странице "Обязательный самоконтроль результатов" (materials/mandatory_self_check.md).
+Оформление - как у таблиц главной страницы (шапка #d5dce4, каждая вторая строка #f2f2f2, внешняя обводка #606c71),
+но задано классом один раз здесь, а не в каждой строке: строки проверок будут добавляться и удаляться,
+а чередование цвета строк (nth-child) при этом сохраняется само.
+Шапка таблицы - в <thead>, строки проверок - в <tbody>: так чередование считается только по строкам проверок.
+*/
+.main-content table.self-check {
+  display: table;               /* в теме Cayman у таблиц display: block - рамка была бы шире таблицы */
+  width: 100%;
+  outline: 1px solid #606c71;
+  outline-offset: -1px;
+}
+.main-content table.self-check thead tr {
+  height: 4em;
+}
+.main-content table.self-check th {
+  background-color: #d5dce4;
+}
+.main-content table.self-check tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+.main-content table.self-check td {
+  vertical-align: top;
+}
+.main-content table.self-check td.num {        /* номер проверки: 1.1, 1.2 ... */
+  white-space: nowrap;
+  font-weight: bold;
+}
+.main-content table.self-check .type {         /* значок типа ошибки (столбец "Ошибка") */
+  text-align: center;
+  white-space: nowrap;
+}
+.main-content table.self-check .mark {         /* столбец с галочкой */
+  text-align: center;
+}
+.main-content table.self-check input[type="checkbox"] {
+  width: 1.25em;
+  height: 1.25em;
+  cursor: pointer;
+}
+.main-content table.self-check .how {          /* "Как проверить" - вторая часть ячейки */
+  display: block;
+  margin-top: 0.4em;
+  font-size: 0.95em;
+  font-style: italic;
+}
+
+
+
 
