@@ -16,5 +16,5 @@ google_analytics:
 highlighter: rouge
 
 # Исключаю README, чтобы он не перекладывался в корень самого сайта
-exclude: [README.md, CLAUDE.md, start.bat, Gemfile, Gemfile.lock, "Ссылка на localhost 4000.url", "Ссылка на RUDN-QGIS-ORBIT-L1.url", "Ссылка на репозиторий RUDN-QGIS-ORBIT-L1 на GitHub.url", ]
+exclude: [README.md, AGENTS.md, CLAUDE.md, start.bat, Gemfile, Gemfile.lock, "Ссылка на localhost 4000.url", "Ссылка на RUDN-QGIS-ORBIT-L1.url", "Ссылка на репозиторий RUDN-QGIS-ORBIT-L1 на GitHub.url", ]
 
