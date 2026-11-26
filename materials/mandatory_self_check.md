@@ -308,6 +308,16 @@ permalink: /materials/mandatory_self_check.html
     <td class="type" title="Грубая ошибка">🔴</td>
     <td class="mark"><input type="checkbox"></td>
   </tr>
+  <tr id="check-5-8">
+    <td class="num">5.8</td>
+    <td><b>Все трассы КА сцентрированы в окне Карты и вписаны в него.</b>
+        <span class="how">Как проверить: откройте сохраненный проект заново — все трассы должны быть 
+        видны в окне Карты полностью (вписаны в него) и&nbsp;расположены строго по центру. 
+        Этот вид (охват) задают перед сохранением проекта: выделяют в панели «Слои» слой КА&nbsp;TERRA 
+        и&nbsp;выполняют действие «Увеличить&nbsp;до&nbsp;слоя».</span></td>
+    <td class="type" title="Недочет">🟡</td>
+    <td class="mark"><input type="checkbox"></td>
+  </tr>
 </tbody>
 </table>
 
